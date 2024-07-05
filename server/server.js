@@ -16,6 +16,12 @@ app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 
+//import routes
+const todoRoutes = require("./routes/todo");
+
+//routes
+app.use("/api", todoRoutes);
+
 // Connecting with the DB
 mongoose.connect(process.env.DB_CONNECTION_URL);
 
