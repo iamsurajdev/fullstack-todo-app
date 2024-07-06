@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Select } from "antd";
-import { getAllTasksApi } from "../../api/todoApis";
+import { addTaskApi, getAllTasksApi, updateTaskApi } from "../../api/todoApis";
 import AddEditTaskModal from "../../components/AddEditTaskModal";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [addEditModal, setAddEditModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const fetchAllTasks = async () => {
     try {
@@ -16,12 +17,42 @@ const TaskList = () => {
     }
   };
 
-  const openAddEditModal = () => {
+  const openAddEditModal = (data = null) => {
+    if (data) {
+      console.log("data", data);
+      setSelectedTask(data);
+    }
     setAddEditModal(!addEditModal);
   };
 
   const closeAddEditModal = () => {
     setAddEditModal(!addEditModal);
+    setSelectedTask(null);
+  };
+
+  const addTask = async (value) => {
+    try {
+      const response = await addTaskApi(value);
+      setTasks((prev) => [...prev, response.data]);
+      closeAddEditModal();
+    } catch (error) {
+      console.log("🚀 ~ onFinish ~ error:", error);
+    }
+  };
+
+  const updateTask = async (value) => {
+    try {
+      const response = await updateTaskApi({
+        ...value,
+        taskId: selectedTask?._id,
+      });
+      setTasks((prev) =>
+        prev.map((i) => (i._id === response?.data?._id ? response?.data : i))
+      );
+      closeAddEditModal();
+    } catch (error) {
+      console.log("🚀 ~ onFinish ~ error:", error);
+    }
   };
 
   useEffect(() => {
@@ -31,7 +62,7 @@ const TaskList = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-4">
-        <Button type="primary" onClick={openAddEditModal}>
+        <Button type="primary" onClick={() => openAddEditModal()}>
           Add
         </Button>
       </div>
@@ -42,7 +73,7 @@ const TaskList = () => {
             <p>{task.description}</p>
             <p>Status: {task.status}</p>
             <div className="mt-2">
-              <Button type="primary" onClick={() => {}}>
+              <Button type="primary" onClick={() => openAddEditModal(task)}>
                 Edit
               </Button>
               <Button type="primary" danger className="mx-3" onClick={() => {}}>
@@ -75,7 +106,13 @@ const TaskList = () => {
       </ul>
 
       {addEditModal ? (
-        <AddEditTaskModal open={addEditModal} onCancel={closeAddEditModal} />
+        <AddEditTaskModal
+          open={addEditModal}
+          onCancel={closeAddEditModal}
+          editTaskData={selectedTask}
+          addTask={addTask}
+          updateTask={updateTask}
+        />
       ) : null}
     </div>
   );

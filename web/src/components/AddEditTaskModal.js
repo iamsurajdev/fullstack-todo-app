@@ -1,25 +1,25 @@
 import { Button, Col, Form, Input, Modal, Select } from "antd";
 import { useEffect } from "react";
-import { addTaskApi } from "../api/todoApis";
 
-const AddEditTaskModal = ({ open, onCancel, editTaskData = null }) => {
+const AddEditTaskModal = ({
+  open,
+  onCancel,
+  editTaskData = null,
+  addTask,
+  updateTask,
+}) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
+    console.log('editTaskData', editTaskData)
     if (editTaskData) {
-      //
+      form.setFieldsValue({
+        title: editTaskData?.title,
+        description: editTaskData?.description,
+        status: editTaskData?.status,
+      });
     }
   }, [editTaskData]);
-
-  const onFinish = async (value) => {
-    console.log("🚀 ~ onFinish ~ value:", value);
-    try {
-      const response = await addTaskApi(value);
-      console.log("🚀 ~ onFinish ~ response:", response);
-    } catch (error) {
-      console.log("🚀 ~ onFinish ~ error:", error);
-    }
-  };
 
   return (
     <Modal
@@ -28,7 +28,7 @@ const AddEditTaskModal = ({ open, onCancel, editTaskData = null }) => {
       onCancel={onCancel}
       footer={null}
     >
-      <Form form={form} onFinish={onFinish}>
+      <Form form={form} onFinish={editTaskData ? updateTask : addTask}>
         <Col
           style={{
             display: "inline-block",
@@ -133,7 +133,7 @@ const AddEditTaskModal = ({ open, onCancel, editTaskData = null }) => {
         >
           <Form.Item>
             <Button type="primary" block htmlType="submit">
-              Submit
+              {editTaskData ? "Update" : "Submit"}
             </Button>
           </Form.Item>
         </Col>
