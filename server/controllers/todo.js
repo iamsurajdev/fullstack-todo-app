@@ -22,7 +22,7 @@ exports.getTasksController = async (req, res) => {
   try {
     const data = await Todo.find();
 
-    res.status(201).json(data);
+    res.status(200).json(data);
   } catch (error) {
     console.log("error", error);
     res.status(500).json({
