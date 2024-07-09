@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Button, Select } from "antd";
-import { addTaskApi, getAllTasksApi, updateTaskApi } from "../../api/todoApis";
+import {
+  addTaskApi,
+  deleteTaskApi,
+  getAllTasksApi,
+  updateTaskApi,
+} from "../../api/todoApis";
 import AddEditTaskModal from "../../components/AddEditTaskModal";
+import DeleteConformationModal from "../../components/DeleteConformationModal";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [addEditModal, setAddEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
   const fetchAllTasks = async () => {
@@ -19,15 +26,26 @@ const TaskList = () => {
 
   const openAddEditModal = (data = null) => {
     if (data) {
-      console.log("data", data);
       setSelectedTask(data);
     }
-    setAddEditModal(!addEditModal);
+    setAddEditModal(true);
   };
 
   const closeAddEditModal = () => {
-    setAddEditModal(!addEditModal);
+    setAddEditModal(false);
     setSelectedTask(null);
+  };
+
+  const openDeleteModal = (data = null) => {
+    if (data) {
+      setSelectedTask(data);
+    }
+    setDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setSelectedTask(null);
+    setDeleteModal(false);
   };
 
   const addTask = async (value) => {
@@ -40,16 +58,26 @@ const TaskList = () => {
     }
   };
 
-  const updateTask = async (value) => {
+  const updateTask = async (value, taskId = null) => {
     try {
       const response = await updateTaskApi({
         ...value,
-        taskId: selectedTask?._id,
+        taskId: taskId ? taskId : selectedTask?._id,
       });
       setTasks((prev) =>
         prev.map((i) => (i._id === response?.data?._id ? response?.data : i))
       );
       closeAddEditModal();
+    } catch (error) {
+      console.log("🚀 ~ onFinish ~ error:", error);
+    }
+  };
+
+  const deleteTask = async () => {
+    try {
+      await deleteTaskApi(selectedTask?._id);
+      setTasks((prev) => prev.filter((i) => i._id !== selectedTask?._id));
+      closeDeleteModal();
     } catch (error) {
       console.log("🚀 ~ onFinish ~ error:", error);
     }
@@ -76,7 +104,12 @@ const TaskList = () => {
               <Button type="primary" onClick={() => openAddEditModal(task)}>
                 Edit
               </Button>
-              <Button type="primary" danger className="mx-3" onClick={() => {}}>
+              <Button
+                type="primary"
+                danger
+                className="mx-3"
+                onClick={() => openDeleteModal(task)}
+              >
                 Delete
               </Button>
               <Select
@@ -84,7 +117,7 @@ const TaskList = () => {
                 style={{
                   width: 120,
                 }}
-                onChange={() => {}}
+                onChange={(value) => updateTask({status: value}, task._id)}
                 options={[
                   {
                     value: "todo",
@@ -114,6 +147,18 @@ const TaskList = () => {
           updateTask={updateTask}
         />
       ) : null}
+
+      {deleteModal && (
+        <DeleteConformationModal
+          title={"Delete content"}
+          isOpen={deleteModal}
+          onClose={closeDeleteModal}
+          content={
+            "Are you sure you want to delete this task. once deleted it can not be recovered"
+          }
+          onConform={deleteTask}
+        />
+      )}
     </div>
   );
 };
