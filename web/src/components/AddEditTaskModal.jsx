@@ -11,7 +11,6 @@ const AddEditTaskModal = ({
   const [form] = Form.useForm();
 
   useEffect(() => {
-    console.log('editTaskData', editTaskData)
     if (editTaskData) {
       form.setFieldsValue({
         title: editTaskData?.title,
