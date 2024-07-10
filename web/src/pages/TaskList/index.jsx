@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Select } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   addTaskApi,
   deleteTaskApi,
@@ -88,18 +89,26 @@ const TaskList = () => {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-4">
-        <Button type="primary" onClick={() => openAddEditModal()}>
-          Add
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-3xl text-center">Task Management</h1>
+      <div className="my-6">
+        <Button type="primary" block onClick={() => openAddEditModal()}>
+          <PlusOutlined /> Add Task
         </Button>
       </div>
       <ul>
         {tasks.map((task) => (
           <li key={task._id} className="mb-4 p-4 border rounded">
-            <h2 className="text-2xl font-bold">{task.title}</h2>
-            <p>{task.description}</p>
-            <p>Status: {task.status}</p>
+            <h2
+              className={`text-2xl font-bold ${
+                task.status === "done" ? "line-through" : ""
+              }`}
+            >
+              {task.title}
+            </h2>
+            <p className={`${task.status === "done" ? "line-through" : ""}`}>
+              {task.description}
+            </p>
             <div className="mt-2">
               <Button type="primary" onClick={() => openAddEditModal(task)}>
                 Edit
@@ -117,7 +126,7 @@ const TaskList = () => {
                 style={{
                   width: 120,
                 }}
-                onChange={(value) => updateTask({status: value}, task._id)}
+                onChange={(value) => updateTask({ status: value }, task._id)}
                 options={[
                   {
                     value: "todo",
