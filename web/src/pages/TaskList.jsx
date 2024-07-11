@@ -16,11 +16,12 @@ const TaskList = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [filterStatus, setFilterStatus] = useState(null);
 
-  const fetchAllTasks = async () => {
+  const fetchAllTasks = async (status = null) => {
     try {
       setLoading(true);
-      const res = await getAllTasksApi();
+      const res = await getAllTasksApi(status);
       setTasks(res.data);
     } catch (error) {
       console.log("error", error);
@@ -105,17 +106,44 @@ const TaskList = () => {
   };
 
   useEffect(() => {
-    fetchAllTasks();
-  }, []);
+    fetchAllTasks(filterStatus);
+  }, [filterStatus]);
 
   return (
     <Spin spinning={loading}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl text-center">Task Management</h1>
-        <div className="my-6">
-          <Button type="primary" block onClick={() => openAddEditModal()}>
+        <div className="my-6 flex items-center justify-between">
+          <Button type="primary" onClick={() => openAddEditModal()}>
             <PlusOutlined /> Add Task
           </Button>
+          <Select
+            defaultValue={filterStatus}
+            style={{
+              width: 120,
+              height: 35,
+              
+            }}
+            onChange={(value) => setFilterStatus(value)}
+            options={[
+              {
+                value: null,
+                label: "All",
+              },
+              {
+                value: "todo",
+                label: "To Do",
+              },
+              {
+                value: "inprogress",
+                label: "In Progress",
+              },
+              {
+                value: "done",
+                label: "Done",
+              },
+            ]}
+          />
         </div>
         <ul>
           {tasks.map((task) => (

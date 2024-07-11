@@ -7,7 +7,7 @@ exports.createTaskController = async (req, res) => {
     return res.status(400).json({ message: "Title is required" });
   }
 
-  if (!["To Do", "In Progress", "Done"].includes(status)) {
+  if (!["todo", "inprogress", "done"].includes(status)) {
     return res.status(400).json({ message: "Invalid status" });
   }
 
@@ -28,8 +28,15 @@ exports.createTaskController = async (req, res) => {
 };
 
 exports.getTasksController = async (req, res) => {
+  const { status } = req.query;
+
+  let filter = {};
+  if (status) {
+    filter.status = status;
+  }
+
   try {
-    const data = await Todo.find();
+    const data = await Todo.find(filter);
 
     res.status(200).json(data);
   } catch (error) {
@@ -47,7 +54,7 @@ exports.updateTaskController = async (req, res) => {
     return res.status(400).json({ message: "Title cannot be empty" });
   }
 
-  if (status && !["To Do", "In Progress", "Done"].includes(status)) {
+  if (status && !["todo", "inprogress", "done"].includes(status)) {
     return res.status(400).json({ message: "Invalid status" });
   }
 

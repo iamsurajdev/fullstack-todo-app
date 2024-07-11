@@ -1,8 +1,10 @@
 import axios from "../config/axiosConfig";
 
-export const getAllTasksApi = async () => {
+export const getAllTasksApi = async (status = null) => {
   try {
-    const response = await axios.get("/api/getTasks");
+    const response = await axios.get(
+      status ? `/api/getTasks?status=${status}` : "/api/getTasks"
+    );
     return response;
   } catch (error) {
     throw Error(error);
