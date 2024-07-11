@@ -6,9 +6,9 @@ import {
   deleteTaskApi,
   getAllTasksApi,
   updateTaskApi,
-} from "../../api/todoApis";
-import AddEditTaskModal from "../../components/AddEditTaskModal";
-import DeleteConformationModal from "../../components/DeleteConformationModal";
+} from "../api/todoApis";
+import AddEditTaskModal from "../components/AddEditTaskModal";
+import DeleteConformationModal from "../components/DeleteConformationModal";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
