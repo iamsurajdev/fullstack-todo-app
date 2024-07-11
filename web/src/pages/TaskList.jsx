@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, message, Select, Spin } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   addTaskApi,
   deleteTaskApi,
@@ -114,15 +114,11 @@ const TaskList = () => {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl text-center">Task Management</h1>
         <div className="my-6 flex items-center justify-between">
-          <Button type="primary" onClick={() => openAddEditModal()}>
-            <PlusOutlined /> Add Task
-          </Button>
           <Select
             defaultValue={filterStatus}
             style={{
               width: 120,
               height: 35,
-              
             }}
             onChange={(value) => setFilterStatus(value)}
             options={[
@@ -144,6 +140,9 @@ const TaskList = () => {
               },
             ]}
           />
+          <Button type="primary" onClick={() => openAddEditModal()}>
+            <PlusOutlined /> Add Task
+          </Button>
         </div>
         <ul>
           {tasks.map((task) => (
@@ -160,7 +159,7 @@ const TaskList = () => {
               </p>
               <div className="mt-2">
                 <Button type="primary" onClick={() => openAddEditModal(task)}>
-                  Edit
+                  <EditOutlined /> Edit
                 </Button>
                 <Button
                   type="primary"
@@ -168,7 +167,7 @@ const TaskList = () => {
                   className="mx-3"
                   onClick={() => openDeleteModal(task)}
                 >
-                  Delete
+                  <DeleteOutlined /> Delete
                 </Button>
                 <Select
                   defaultValue={task.status}
